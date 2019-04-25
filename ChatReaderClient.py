@@ -1,4 +1,5 @@
 import socket
+import select
 import sys
 import errno
 
@@ -8,7 +9,7 @@ PORT = 9876
 
 my_username = input("Username: ")
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((HOST, PORT))
+client.connect((HOST,PORT))
 client.setblocking(False)
 
 username = my_username.encode("utf-8")
@@ -16,7 +17,7 @@ username_header = f"{len(username):<{HEADER}}".encode("utf-8")
 client.send(username_header + username)
 
 while True:
-    message = input("%s: " % my_username)
+    message = ""
 
     if message:
         message = message.encode("utf-8")
@@ -36,7 +37,7 @@ while True:
             message_length = int(message_header.decode("utf-8"))
             message = client.recv(message_length).decode("utf-8")
 
-            print("%s: %s" % (username, message))
+            print(f"{username} > {message}")
 
     except IOError as e:
         if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:

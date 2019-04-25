@@ -6,14 +6,13 @@ HOST = 'localhost'
 PORT = 9876
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.setsockopt(socket.SQL_SOCKET, socket.SO_REUSEADDR, 1)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 server.bind((HOST, PORT))
 
 server.listen()
 
 socket_list = [server]
-
 client_list = {}
 
 
@@ -47,17 +46,18 @@ while True:
 
             client_list[client_socket] = user
 
-            print("New connection from ", client_address[0], ":", client_address[1])
+            print("New connection from", client_address[0], ":", client_address[1], "Username:",
+                  user['data'].decode("utf-8"))
         else:
             message = recv_msg(notified_socket)
 
             if message is False:
-                print("Closed connection from ", client_list[notified_socket]['data'].decode('utf-8'))
+                print("Closed connection from", client_list[notified_socket]['data'].decode("utf-8"))
                 socket_list.remove(notified_socket)
                 del client_list[notified_socket]
                 continue
             user = client_list[notified_socket]
-            print("Received message from ", user['data]'].decode('utf-8'))
+            print("Received message from", user['data'].decode("utf-8"))
 
             for client_socket in client_list:
                 if client_socket != notified_socket:
